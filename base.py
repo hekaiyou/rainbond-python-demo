@@ -7,20 +7,17 @@ import pymongo
 # 12 Factor: https://12factor.net/zh_cn/
 
 
-def create_db_connection(db=None, collection=None, home=None, port=None):
-    mongo_home = os.environ.get('MONGODB_HOST', home)
-    mongo_port = os.environ.get('MONGODB_PORT', port)
+def create_db_connection(home_kye='MONGODB_HOST', port_kye='MONGODB_PORT'):
+    mongo_home = os.environ.get(home_kye, None)
+    mongo_port = os.environ.get(port_kye, None)
 
     if not mongo_home or not mongo_port or not db or not collection:
-        return {'result': False, 'data': ('MongoDB(组件)的组件连接信息是不完整的', 404, [])}
-
+        print('MongoDB(组件)的组件连接信息是不完整的')
     try:
         mongo_client = pymongo.MongoClient(mongo_home, int(mongo_port))
-        mongo_db = mongo_client[db]
-        mongo_collection = mongo_db[collection]
-        return {'result': True, 'data': mongo_collection}
+        return mongo_client
     except Exception as err:
-        return {'result': False, 'data': ('MongoDB(组件)出现未知错误: {0}'.format(err), 500, [])}
+        print('MongoDB(组件)出现未知错误: {0}'.format(err))
 
 
 def parameter_verification(request, checking=None):
@@ -32,5 +29,5 @@ def parameter_verification(request, checking=None):
     else:
         parameter = json.loads(request.get_data(as_text=True))
     if not set(checking).issubset(set(parameter.keys())):
-        return {'result': False, 'data': ('请求缺少必需的字段: {0}'.format(json.dumps(checking)), 400, [])}
+        return {'result': False, 'response': ('请求缺少必需的字段: {0}'.format(json.dumps(checking)), 400, [])}
     return {'result': True, 'data': parameter}
