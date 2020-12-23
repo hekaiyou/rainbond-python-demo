@@ -11,7 +11,7 @@ def create_db_connection(home_kye='MONGODB_HOST', port_kye='MONGODB_PORT'):
     mongo_home = os.environ.get(home_kye, None)
     mongo_port = os.environ.get(port_kye, None)
 
-    if not mongo_home or not mongo_port or not db or not collection:
+    if not mongo_home or not mongo_port:
         print('MongoDB(组件)的组件连接信息是不完整的')
     try:
         mongo_client = pymongo.MongoClient(mongo_home, int(mongo_port))
