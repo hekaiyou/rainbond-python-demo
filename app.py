@@ -1,20 +1,18 @@
 import json
 from flask import Flask, request
-from base import create_db_connection, parameter_verification
+from base import parameter_verification
+from rainbond_python.db_connect import DBConnect
 
 app = Flask(__name__)
-db_client = create_db_connection()
+db = DBConnect(db='demo', collection='test')
 
 
 @app.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def api():
     method = request.method
 
-    db = db_client['demo']
-    collection = db['test']
-
     if method == 'GET':
-        cursor = collection.find()
+        cursor = db.get_collection().find()
         if not cursor.count():
             return '资源为空', 204, []
         data = list(cursor)
@@ -25,8 +23,10 @@ def api():
         if verification['result']:
             parameter = verification['data']
             insert_dict = {'name': parameter['name'], 'age': parameter['age']}
-            collection.insert_one(insert_dict)
-            return '新资源被创建', 201, []
+            if db.write_one_docu(docu=insert_dict):
+                return '新资源被创建', 201, []
+            else:
+                return '资源无法被创建', 500, []
         else:
             return verification['response']
 
