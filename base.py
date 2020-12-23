@@ -9,7 +9,7 @@ import pymongo
 
 def create_db_connection(home_kye='MONGODB_HOST', port_kye='MONGODB_PORT'):
     mongo_home = os.environ.get(home_kye, None)
-    mongo_port = os.environ.get(port_kye, None)
+    mongo_port = os.environ.get(port_kye, 27017)
 
     if not mongo_home or not mongo_port:
         print('MongoDB(组件)的组件连接信息是不完整的')
