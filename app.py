@@ -13,7 +13,7 @@ def api():
 
     if parameter.method == 'GET':
         cursor = db.mongo_collection.find()
-        if not cursor.count():
+        if not db.mongo_collection.estimated_document_count():
             return '资源为空', 204, []
         data = list(cursor)
         return str(data), 200, []
